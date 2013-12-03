@@ -22,7 +22,7 @@ public:
 		mutex.unlock();
 	}
 	
-	void clearHost()
+	void clearHosts()
 	{
 		mutex.lock();
 		addresses.clear();
@@ -34,14 +34,6 @@ public:
 		return addresses;
 	}
 	
-	string getLatestMessage()
-	{
-		mutex.lock();
-		string ret = data;
-		mutex.unlock();
-		return ret;
-	}
-	
 	void onDataReceived(float t, const string& data)
 	{
 		mutex.lock();
@@ -49,7 +41,6 @@ public:
 		{
 			sock.sendTo(data.data(), data.size(), addresses[n]);
 		}
-		this->data = data;
 		mutex.unlock();
 	}
 	
@@ -60,8 +51,6 @@ public:
 	}
 	
 protected:
-	
-	string data;
 	
 	ofMutex mutex;
 	Poco::Net::DatagramSocket sock;

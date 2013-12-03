@@ -1,8 +1,9 @@
 #pragma once
 
-#include "sqlite3.h"
-
+#include "ofMain.h"
 #include "ofxSqliteStreamConstants.h"
+
+#include "sqlite3.h"
 
 OFX_SQLITE_STREAM_BEGIN_NAMESPACE
 

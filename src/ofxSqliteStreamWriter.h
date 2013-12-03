@@ -12,7 +12,6 @@ class Writer : public Session
 public:
 	
 	typedef ofPtr<Writer> Ptr;
-	typedef float TimeStamp;
 	
 	Writer() : is_recording(false), start_time(-1) {}
 	virtual ~Writer() { close(); }
