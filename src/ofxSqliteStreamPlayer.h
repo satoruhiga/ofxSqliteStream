@@ -11,10 +11,8 @@
 
 OFX_SQLITE_STREAM_BEGIN_NAMESPACE
 
-class PlayerDelegate
+struct PlayerDelegate
 {
-public:
-	typedef ofPtr<PlayerDelegate> Ref;
 	virtual ~PlayerDelegate() {}
 	virtual void onDataReceived(float t, const string& data) = 0;
 };
@@ -103,7 +101,7 @@ public:
 	void setPlaybackRatio(float v) { playback_ratio = v; if (playback_ratio < 0) playback_ratio = 0; }
 	float getPlaybackRatio() const { return playback_ratio; }
 	
-	void setDelegate(PlayerDelegate::Ref delegate)
+	void setDelegate(PlayerDelegate* delegate)
 	{
 		this->delegate = delegate;
 	}
@@ -124,7 +122,7 @@ protected:
 	
 	float playback_ratio;
 	
-	PlayerDelegate::Ref delegate;
+	PlayerDelegate* delegate;
 	
 	void threadedFunction()
 	{

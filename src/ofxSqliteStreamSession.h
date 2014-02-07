@@ -16,11 +16,10 @@ public:
 	
 	virtual void close()
 	{
-		if (db)
-		{
-			sqlite3_close(db);
-			db = NULL;
-		}
+		if (db == NULL) return;
+		
+		sqlite3_close(db);
+		db = NULL;
 	}
 	
 	bool isOpend() const { return db; }
@@ -31,6 +30,8 @@ protected:
 	
 	void exec(const char* sql)
 	{
+		if (db == NULL) return;
+		
 		char *err = NULL;
 		sqlite3_exec(db, sql, 0, 0, &err);
 		

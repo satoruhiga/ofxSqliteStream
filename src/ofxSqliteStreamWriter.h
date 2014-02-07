@@ -13,21 +13,24 @@ public:
 	
 	typedef ofPtr<Writer> Ptr;
 	
-	Writer() : is_recording(false), start_time(-1) {}
+	Writer() {}
 	virtual ~Writer() { close(); }
 	
 	bool open(const string& path, bool overwrite = false, bool use_journal = false)
 	{
 		close();
 		
-		if (overwrite)
+		if (ofFile::doesFileExist(path))
 		{
-			ofFile::removeFile(path);
-		}
-		else if (ofFile::doesFileExist(path))
-		{
-			ofLogError("Writer") << "file already exists: " << path;
-			return false;
+			if (overwrite)
+			{
+				ofFile::removeFile(path);
+			}
+			else
+			{
+				ofLogError("Writer") << "file already exists: " << path;
+				return false;
+			}
 		}
 		
 		sqlite3_open(ofToDataPath(path).c_str(), &db);
@@ -41,43 +44,20 @@ public:
 	
 	void close()
 	{
-		if (is_recording)
-		{
-			is_recording = false;
-			start_time = -1;
-		}
+		if (db == NULL) return;
 		
-		if (db)
-		{
-			exec("pragma synchronous = ON");
-			exec("create index time_index on Message(time)");
-			
-			sqlite3_finalize(stmt);
-			stmt = NULL;
-		}
+		exec("pragma synchronous = ON");
+		exec("create index time_index on Message(time)");
+		
+		sqlite3_finalize(stmt);
+		stmt = NULL;
 		
 		Session::close();
 	}
 	
-	void start()
-	{
-		if (!db)
-		{
-			ofLogError("Writer") << "open session first";
-			throw;
-		}
-		
-		is_recording = true;
-	}
-	
-	void stop()
-	{
-		close();
-	}
-	
 	bool addMessage(TimeStamp t, const string &data)
 	{
-		if (!db)
+		if (db == NULL)
 		{
 			ofLogError("Writer") << "open session first";
 			return false;
@@ -110,14 +90,9 @@ public:
 		}
 	}
 	
-	bool isRecording() const { return is_recording; }
-	
 protected:
 	
 	sqlite3_stmt *stmt;
-	
-	bool is_recording;
-	TimeStamp start_time;
 	
 	void migrateDB(bool use_journal)
 	{

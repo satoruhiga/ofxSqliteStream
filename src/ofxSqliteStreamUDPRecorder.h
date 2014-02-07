@@ -52,7 +52,6 @@ public:
 			if (session->open(session_filename, overwrite, use_journal))
 			{
 				timer.setStartTime();
-				session->start();
 				started = true;
 			}
 		}
