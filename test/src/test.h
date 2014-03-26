@@ -15,7 +15,6 @@ void open_close()
 	ofFile::removeFile(test_file_name);
 	
 	assert(writer.open(test_file_name));
-	assert(writer.isRecording() == false);
 	assert(writer.isOpend() == true);
 	
 	writer.close();
@@ -38,16 +37,11 @@ void writing()
 	ofFile::removeFile(test_file_name);
 	assert(writer.open(test_file_name));
 	
-	writer.start();
-	
-	assert(writer.isRecording() == true);
 	assert(writer.addMessage(0, "test") == true);
 	
-	writer.stop();
+	writer.close();
 	
 	assert(writer.addMessage(0, "test") == false);
-	
-	writer.close();
 	
 	cout << "success: " << __PRETTY_FUNCTION__ << endl;
 }
@@ -59,7 +53,6 @@ void read_write()
 		ofFile::removeFile(test_file_name);
 		assert(writer.open(test_file_name));
 
-		writer.start();
 		ofSleepMillis(100);
 		assert(writer.addMessage(42, "test") == true);
 		writer.close();
