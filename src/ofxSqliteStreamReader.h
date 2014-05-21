@@ -76,7 +76,7 @@ public:
 			TimeStamp t = sqlite3_column_double(stmt, 0);
 			char *ptr = (char*)sqlite3_column_blob(stmt, 1);
 			size_t len = sqlite3_column_bytes(stmt, 1);
-			messages.push_back(make_pair<TimeStamp, string>(t, string(ptr, len)));
+			messages.push_back(std::pair<TimeStamp, string>(t, string(ptr, len)));
 		}
 		
 		sqlite3_clear_bindings(stmt);
