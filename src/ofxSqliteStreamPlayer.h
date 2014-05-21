@@ -11,16 +11,17 @@
 
 OFX_SQLITE_STREAM_BEGIN_NAMESPACE
 
-struct PlayerDelegate
-{
-	typedef ofPtr<PlayerDelegate> Ref;
-	virtual ~PlayerDelegate() {}
-	virtual void onDataReceived(float t, const string& data) = 0;
-};
-
 class Player : protected ofThread
 {
 public:
+	
+	struct DataEventArg
+	{
+		float timestamp;
+		string data;
+	};
+	
+	ofEvent<DataEventArg> dataReceived;
 	
 	Player() : fps(120), is_playing(false), loop(false), playback_ratio(1)
 	{
@@ -102,11 +103,6 @@ public:
 	void setPlaybackRatio(float v) { playback_ratio = v; if (playback_ratio < 0) playback_ratio = 0; }
 	float getPlaybackRatio() const { return playback_ratio; }
 	
-	void setDelegate(PlayerDelegate::Ref delegate)
-	{
-		this->delegate = delegate;
-	}
-	
 protected:
 	
 	bool loop;
@@ -122,8 +118,6 @@ protected:
 	int message_per_frame;
 	
 	float playback_ratio;
-	
-	PlayerDelegate::Ref delegate;
 	
 	void threadedFunction()
 	{
@@ -145,14 +139,13 @@ protected:
 			
 			session->getMessages(last_tick, current_tick, records);
 			
-			if (delegate)
+
+			for (int i = 0; i < records.size(); i++)
 			{
-				for (int i = 0; i < records.size(); i++)
-				{
-					TimeStamp t = records[i].first;
-					const string &data = records[i].second;
-					delegate->onDataReceived(t, data);
-				}
+				DataEventArg e;
+				e.timestamp = records[i].first;
+				e.data = records[i].second;
+				ofNotifyEvent(dataReceived, e);
 			}
 			
 			message_per_frame = records.size();

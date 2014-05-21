@@ -55,7 +55,7 @@ public:
 		Session::close();
 	}
 	
-	bool addMessage(TimeStamp t, const string &data)
+	bool addMessage(TimeStamp t, void *data, size_t len)
 	{
 		if (db == NULL)
 		{
@@ -64,7 +64,7 @@ public:
 		}
 		
 		sqlite3_bind_double(stmt, 1, t);
-		sqlite3_bind_blob(stmt, 2, data.data(), data.size(), SQLITE_TRANSIENT);
+		sqlite3_bind_blob(stmt, 2, data, len, SQLITE_TRANSIENT);
 		
 		if (SQLITE_DONE != sqlite3_step(stmt))
 		{
@@ -75,6 +75,11 @@ public:
 		sqlite3_reset(stmt);
 		
 		return true;
+	}
+	
+	bool addMessage(TimeStamp t, const string &data)
+	{
+		return addMessage(t, (void*)data.c_str(), data.size());
 	}
 	
 	void clear()
