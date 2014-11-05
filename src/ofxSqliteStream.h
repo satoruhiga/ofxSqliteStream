@@ -8,4 +8,4 @@
 
 // UDP
 #include "ofxSqliteStreamUDPRecorder.h"
-#include "ofxSqliteStreamUDPPlayerDelegate.h"
+#include "ofxSqliteStreamUDPPlayer.h"
